@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping App</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .btn {
+      padding: 15px 30px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-bag {
+      background: #4CAF50;
+      color: white;
+      position: relative;
+    }
+
+    .btn-bag:hover {
+      background: #45a049;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-bag .count {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: #ff5722;
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .btn-wishlist {
+      background: #ff4757;
+      color: white;
+    }
+
+    .btn-wishlist:hover {
+      background: #ee5a6f;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+    }
+
+    .sale-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .btn-sale {
+      background: #2196F3;
+      color: white;
+      flex: 1;
+    }
+
+    .btn-sale:hover {
+      background: #0b7dda;
+    }
+
+    .sale-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sale-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: #667eea;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .sale-btn:hover {
+      background: #5568d3;
+      transform: scale(1.1);
+    }
+
+    .sale-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: scale(1);
+    }
+
+    .sale-count {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    /* Popup Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.3s ease;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .modal-content h2 {
+      color: #4CAF50;
+      margin-bottom: 15px;
+    }
+
+    .modal-content p {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .close-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 30px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .close-btn:hover {
+      background: #45a049;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .btn {
+        font-size: 14px;
+        padding: 12px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Shopping Cart</h1>
+    <div class="button-container">
+      <button class="btn btn-bag" id="addToBagBtn">
+        Add to Bag
+        <span class="count" id="bagCount">0</span>
+      </button>
+
+      <button class="btn btn-wishlist" id="wishlistBtn">
+        Move to Wishlist
+      </button>
+
+      <div class="sale-container">
+        <button class="btn btn-sale" id="saleBtn">
+          1+1 Sale Items
+        </button>
+        <div class="sale-controls">
+          <button class="sale-btn" id="minusBtn">-</button>
+          <span class="sale-count" id="saleCount">0</span>
+          <button class="sale-btn" id="plusBtn">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h2>✓ Success!</h2>
+      <p id="modalMessage">Item added to bag successfully!</p>
+      <button class="close-btn" id="closeModal">OK</button>
+    </div>
+  </div>
+
+  <script>
+    // Initialize counters
+    let bagCount = 0;
+    let saleCount = 0;
+
+    // Get elements
+    const addToBagBtn = document.getElementById('addToBagBtn');
+    const wishlistBtn = document.getElementById('wishlistBtn');
+    const saleBtn = document.getElementById('saleBtn');
+    const minusBtn = document.getElementById('minusBtn');
+    const plusBtn = document.getElementById('plusBtn');
+    const bagCountElement = document.getElementById('bagCount');
+    const saleCountElement = document.getElementById('saleCount');
+    const modal = document.getElementById('modal');
+    const modalMessage = document.getElementById('modalMessage');
+    const closeModal = document.getElementById('closeModal');
+
+    // Add to Bag functionality
+    addToBagBtn.addEventListener('click', () => {
+      bagCount++;
+      bagCountElement.textContent = bagCount;
+      showPopup(`Item added to bag! Total items: ${bagCount}`);
+    });
+
+    // Move to Wishlist functionality
+    wishlistBtn.addEventListener('click', () => {
+      showPopup('Item moved to wishlist!');
+    });
+
+    // 1+1 Sale - Plus button
+    plusBtn.addEventListener('click', () => {
+      saleCount++;
+      saleCountElement.textContent = saleCount;
+      updateMinusButton();
+    });
+
+    // 1+1 Sale - Minus button
+    minusBtn.addEventListener('click', () => {
+      if (saleCount > 0) {
+        saleCount--;
+        saleCountElement.textContent = saleCount;
+        updateMinusButton();
+      }
+    });
+
+    // Update minus button state
+    function updateMinusButton() {
+      if (saleCount === 0) {
+        minusBtn.disabled = true;
+      } else {
+        minusBtn.disabled = false;
+      }
+    }
+
+    // Show popup modal
+    function showPopup(message) {
+      modalMessage.textContent = message;
+      modal.classList.add('show');
+    }
+
+    // Close modal
+    closeModal.addEventListener('click', () => {
+      modal.classList.remove('show');
+    });
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('show');
+      }
+    });
+
+    // Initialize minus button state
+    updateMinusButton();
+  </script>
+</body>
+</html>
